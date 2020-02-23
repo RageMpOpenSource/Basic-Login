@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: transparent;
+        }
+        .notify{  
+            position: absolute;;
+            top:0px;
+            width:100%;
+            height:0;  
+            box-sizing:border-box;
+            color:white;  
+            text-align:center;
+            background:rgba(0,0,0,.6);
+            overflow:hidden;
+            box-sizing:border-box;
+            transition:height .2s;
+        }
+        #notifyText:before{
+            display:block;
+            margin-top:15px;    
+        }
+        .active{  
+            height:50px;
+        }
+        .message:before{
+            color: white;
+        }
+    </style>
+    <title>Top delay notification.</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="notify"><span id="notifyText"></span></div>
+</body>
+<script>
+    var timer = -1;
+
+    function ExecuteNotification(text, delay, color = "lightgreen", italics = false){
+
+        if(timer == -1)
+            clearTimeout(timer);
+
+        $('.notify').addClass('active');
+
+        $('#notifyText').html(text);
+        $('#notifyText').css("font-size", "25px");
+        $('#notifyText').css("color", color);
+
+        if(italics)
+            $('#notifyText').css("font-style", "italic");
+        
+        timer = setTimeout(() => {
+            $('.notify').removeClass('active');
+            $('#notifyText').removeClass('message');
+            mp.trigger("Notification_NotificationOff");
+            timer = -1;
+        }, delay);
+    }
+</script>
+</html>
