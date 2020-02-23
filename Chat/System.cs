@@ -8,7 +8,7 @@ namespace Furious_V.Chat
     class System : Script
     {
         [ServerEvent(Event.ResourceStart)]
-        private void OnResourceStart()
+        public void OnResourceStart()
         {
             NAPI.Server.SetGlobalServerChat(false);
         }
@@ -31,8 +31,6 @@ namespace Furious_V.Chat
                     target.SendChatMessage($"{Colors.COLOR_GRAD5}{player.Name} says: {message}");
                 else if (Utils.DistanceFromPlayerToPlayer(player, target) <= radius / 2)
                     target.SendChatMessage($"{Colors.COLOR_GRAD6}{player.Name} says: {message}");
-                else
-                    target.SendChatMessage("Invalid");
             }
         }
         public static void SendOOCChatToAll(string message)
@@ -44,7 +42,11 @@ namespace Furious_V.Chat
         }
         public static void SendOOCChatToPlayer(Client player, string message)
         {
-            player.SendChatMessage($"(({Colors.COLOR_OOC}");
+            player.SendChatMessage($"(({Colors.COLOR_OOC}))");
+        }
+        public static void SendErrorMessageToPlayer(Client player, string message)
+        {
+            player.SendChatMessage($"{Colors.Color_White}[{Colors.Color_Error}Error{Colors.Color_White}] {message}");
         }
     }
 }

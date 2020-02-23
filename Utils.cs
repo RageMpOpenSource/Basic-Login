@@ -71,5 +71,11 @@ namespace Furious_V
         {
             return Math.Abs( player.Position.DistanceTo(target.Position) );
         }
+
+        public static void PopUpNotification(Client player, string text, int delay, string color, bool italics = false)
+        {
+            NAPI.ClientEvent.TriggerClientEvent(player, "Notification_PopUpNotification", text, delay, color, italics);
+            return;
+        }
     }
 }

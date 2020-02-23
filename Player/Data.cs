@@ -59,6 +59,14 @@ namespace Furious_V.Player
         /// Determines if the player is banned from the server or not.
         /// </summary>
         public Boolean Banned { get; set; }
+        /// <summary>
+        /// Determines if the player is confirming their password while registering.
+        /// </summary>
+        private Boolean ConfirmingPassword { get; set; }
+        /// <summary>
+        /// Stores the decrypted password while the player is re-entering their password for confirmation.
+        /// </summary>
+        private String TempPassword { get; set; }
 
         /// <summary>
         /// Assigns all the default values to the object.
@@ -73,6 +81,8 @@ namespace Furious_V.Player
             this.LoggedIn = false;
             this.PrisonTime = 0;
             this.Banned = false;
+            this.ConfirmingPassword = false;
+            this.TempPassword = "";
         }
         Data() : this(null) { }
 
@@ -197,15 +207,16 @@ namespace Furious_V.Player
         /// Inserts default data into the database and assigns values to the <see cref="Data"/> for the <see cref="Client"/>.
         /// </summary>
         /// <returns>void</returns>
-        private async Task RegisterPlayerData()
+        private async Task RegisterPlayerData(string password)
         {
-            String query = $"INSERT INTO `players` (`Name`) VALUES (@playername);";
+            String query = $"INSERT INTO `players` (`Name`, `Password`) VALUES (@playername, @password);";
             using (Database.DB_Connection = new MySqlConnection(Database.DB_ConnectionString))
             {
                 await Database.DB_Connection.OpenAsync();
                 using (MySqlCommand command = new MySqlCommand(query, Database.DB_Connection))
                 {
                     command.Parameters.AddWithValue("@playername", this.Name);
+                    command.Parameters.AddWithValue("@password", password);
                     await command.ExecuteNonQueryAsync();
                     this.Sqlid = Convert.ToInt32(command.LastInsertedId);
                 }
@@ -263,6 +274,7 @@ namespace Furious_V.Player
                 NAPI.ClientEvent.TriggerClientEvent(player, "Login_PlayerLogin", true);
                 NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditWelcomeText", $"Welcome back to Furious V, {player.Name}!");
                 NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditInformationText", "Please provide your password to log in!");
+                NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditButtonText", "Log in!");
 
             }
             else
@@ -271,6 +283,7 @@ namespace Furious_V.Player
                 NAPI.ClientEvent.TriggerClientEvent(player, "Login_PlayerLogin", true);
                 NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditWelcomeText", $"Welcome to Furious V, {player.Name}!");
                 NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditInformationText", "Please provide a password to resgister!");
+                NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditButtonText", "Register!");
             }
             return;
         }
@@ -317,6 +330,7 @@ namespace Furious_V.Player
                         }
                     }
                 }
+
                 if (BCrypt.Net.BCrypt.Verify(password, passwordHash))
                 {
                     Utils.Log($"{player.Name} logged in with correct password.", Utils.Log_Status.Log_Success);
@@ -325,12 +339,44 @@ namespace Furious_V.Player
                 }
                 else
                 {
-
+                    Utils.Log($"{player.Name} provided an invalid password.", Utils.Log_Status.Log_Warning);
+                    Chat.System.SendErrorMessageToPlayer(player, "You have provided the wrong password and were kicked!");
+                    Utils.PopUpNotification(player, "Invalid password!", 2000, "red", true);
+                    player.Kick();
                 }
+                NAPI.ClientEvent.TriggerClientEvent(player, "Login_PlayerLogin", false);
             }
             else
             {
-
+                if (!GetPlayerData(player).ConfirmingPassword)
+                {
+                    NAPI.ClientEvent.TriggerClientEvent(player, "Login_PlayerLogin", true);
+                    NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditInformationText", "Please re-enter your password!");
+                    NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditButtonText", "Confirm!");
+                    Utils.PopUpNotification(player, "Confirm your password!", 2000, "lightsalmon", true);
+                    GetPlayerData(player).ConfirmingPassword = true;
+                    GetPlayerData(player).TempPassword = password;
+                }
+                else
+                {
+                    if (password.Equals(GetPlayerData(player).TempPassword))
+                    {
+                        NAPI.ClientEvent.TriggerClientEvent(player, "Login_PlayerLogin", false);
+                        var hashedPass = BCrypt.Net.BCrypt.HashPassword(password);
+                        Utils.PopUpNotification(player, "Registered successfully!", 2000, "lightgreen", true);
+                        await GetPlayerData(player).RegisterPlayerData(hashedPass);
+                        Utils.Log($"{player.Name}'s data has registered!", Utils.Log_Status.Log_Success);
+                    }
+                    else
+                    {
+                        NAPI.ClientEvent.TriggerClientEvent(player, "Login_PlayerLogin", true);
+                        NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditInformationText", "The password did not match. Please provide a password again!");
+                        NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditButtonText", "Register!");
+                        Utils.PopUpNotification(player, "Password did not match!", 2000, "red", true);
+                    }
+                    GetPlayerData(player).ConfirmingPassword = false;
+                    GetPlayerData(player).TempPassword = "";
+                }
             }
         }
     }
