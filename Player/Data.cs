@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Threading.Tasks;
 using GTANetworkAPI;
 using MySql.Data.MySqlClient;
+using BCrypt.Net;
 
 using Furious_V;
 using Furious_V.Admin;
@@ -261,12 +262,15 @@ namespace Furious_V.Player
                 Utils.Log($"{player.Name} is tyring to log in.", Utils.Log_Status.Log_Debug);
                 NAPI.ClientEvent.TriggerClientEvent(player, "Login_PlayerLogin", true);
                 NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditWelcomeText", $"Welcome back to Furious V, {player.Name}!");
+                NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditInformationText", "Please provide your password to log in!");
+
             }
             else
             {
-                Utils.Log($"Registering player data for {player.Name}", Utils.Log_Status.Log_Debug);
-                await temp.RegisterPlayerData();
-                Utils.Log($"Registered player data for {player.Name}", Utils.Log_Status.Log_Success);
+                Utils.Log($"{player.Name} is registering in the server.", Utils.Log_Status.Log_Debug);
+                NAPI.ClientEvent.TriggerClientEvent(player, "Login_PlayerLogin", true);
+                NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditWelcomeText", $"Welcome to Furious V, {player.Name}!");
+                NAPI.ClientEvent.TriggerClientEvent(player, "Login_EditInformationText", "Please provide a password to resgister!");
             }
             return;
         }
@@ -292,10 +296,42 @@ namespace Furious_V.Player
         }
 
         [RemoteEvent("Login_LoginInfoToServer")]
-        public /*async*/ static void LoginInfoFromClient(Client player, string password)
+        public async static void LoginInfoFromClient(Client player, string password)
         {
-            player.SendChatMessage($"{password}");
             NAPI.ClientEvent.TriggerClientEvent(player, "Login_PlayerLogin", false);
+            if (await Data.AccountExists(player.Name))
+            {
+                String passwordHash = "";
+                String query = $"SELECT `password` FROM `players` WHERE `Name`=@playername LIMIT 1;";
+                Database.DB_Connection = new MySqlConnection(Database.DB_ConnectionString);
+                using (Database.DB_Connection)
+                {
+                    await Database.DB_Connection.OpenAsync();
+                    using (MySqlCommand command = new MySqlCommand(query, Database.DB_Connection))
+                    {
+                        command.Parameters.AddWithValue("@playername", player.Name);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                                passwordHash = reader["Password"].ToString();
+                        }
+                    }
+                }
+                if (BCrypt.Net.BCrypt.Verify(password, passwordHash))
+                {
+                    Utils.Log($"{player.Name} logged in with correct password.", Utils.Log_Status.Log_Success);
+                    await GetPlayerData(player).LoadPlayerData();
+                    Utils.Log($"{player.Name}'s data has loaded!", Utils.Log_Status.Log_Success);
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+
+            }
         }
     }
 }

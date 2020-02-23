@@ -66,5 +66,10 @@ namespace Furious_V
 
             return;
         }
+
+        public static float DistanceFromPlayerToPlayer(Client player, Client target)
+        {
+            return Math.Abs( player.Position.DistanceTo(target.Position) );
+        }
     }
 }

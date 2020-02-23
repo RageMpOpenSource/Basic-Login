@@ -18,6 +18,9 @@ namespace Furious_V
         [ServerEvent(Event.ResourceStart)]
         public static async Task OnResourceStart()
         {
+            NAPI.Server.SetAutoSpawnOnConnect(false);
+            NAPI.Server.SetAutoRespawnAfterDeath(false);
+
             await MySQL.Database.InitConnection("localhost", "root", "", "furious_v");
             return;
         }

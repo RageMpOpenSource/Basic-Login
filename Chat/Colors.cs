@@ -21,6 +21,6 @@ namespace Furious_V.Chat
         public static readonly String COLOR_GRAD4 = "!{#D8D8D8}";
         public static readonly String COLOR_GRAD5 = "!{#E3E3E3}";
         public static readonly String COLOR_GRAD6 = "!{#F0F0F0}";
-        public static readonly String COLOR_GRAD7 = "!{#C2A2DA}";
+        public static readonly String COLOR_OOC = "!{#D3D3D3}";
     }
 }
