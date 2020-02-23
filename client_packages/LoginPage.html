@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<head>    
+    <title>Login Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        .center {
+            margin: auto;
+            width: 80%;
+            height: 50%;
+            padding: 50px;
+            border: 3px solid black;
+            border-radius: 20px;
+            background-color: azure;
+        }
+        #PasswordButton:hover {
+            box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+        }
+    </style>
+</head>
+<body style="background-color: transparent;">
+    <div style="padding: 200px">
+        <div class="center">
+            <h2 style="text-align: left;"><i id="WelcomeText">Welcome to Furious V server!</i></h2>
+            <br>
+            <label style="text-align: left;"><b id="InformationText">Please provide your password to continue.</b></label>
+            <br>
+            <div class="input-group mb-3 flex-nowrap">
+                <input id="PasswordText" type="password" class="form-control" placeholder="Password" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                <button class="btn btn-outline-secondary" type="button" id="PasswordButton" disabled><i><b>Login</b></i></button>
+            </div>
+        </div>        
+    </div>
+    <script>
+        $(document).ready(function(){
+            $('#PasswordText').keyup(ProcessPasswordField);
+            $('#PasswordButton').click(function(){
+                $('#PasswordButton').attr('disabled', true);
+                mp.trigger("Login_LoginInfoToClient", $('#PasswordText').val());
+            });
+        });
+        function ProcessPasswordField(){
+            if($('#PasswordText').val() == '')
+                $('#PasswordButton').attr('disabled', true);
+            else
+            $('#PasswordButton').attr('disabled', false);
+        }
+        function InformationText(text){
+            $('#InformationText').text(text);
+        }
+        function EditWelcomeText(text){
+            $('#WelcomeText').text(text);
+        }
+        function EditButtonText(text){
+            $('#PasswordButton').text(text);
+        }
+    </script>  
+</body>
