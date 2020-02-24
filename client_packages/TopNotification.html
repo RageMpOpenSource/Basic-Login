@@ -40,7 +40,7 @@
 
     function ExecuteNotification(text, delay, color = "lightgreen", italics = false){
 
-        if(timer != -1)
+        if(timer == -1)
             clearTimeout(timer);
 
         $('.notify').addClass('active');
