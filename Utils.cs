@@ -6,7 +6,7 @@ namespace Furious_V
     /// <summary>
     /// Contains most of the static utilities functions.
     /// </summary>
-    class Utils : Script
+    public class Utils : Script
     {
         /// <summary>
         /// The different levels of Log for the function Log()

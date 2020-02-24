@@ -15,7 +15,7 @@ namespace Furious_V.Player
     /// <summary>
     /// The entire player related data and functionalities are present in this class.
     /// </summary>
-    class Data : Script
+    public class Data : Script
     {
         /// <summary>
         /// The readonly string which defines the key for saving the object created from <see cref="Data"/> in a <see cref="Client"/>

@@ -5,7 +5,7 @@ using GTANetworkAPI;
 
 namespace Furious_V.Chat
 {
-    class Colors : Script
+    public class Colors : Script
     {
         public static readonly String Color_White = "!{#FFFFFF}";
         public static readonly String Color_Black = "!{#000000}";

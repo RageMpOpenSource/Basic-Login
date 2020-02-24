@@ -5,7 +5,7 @@ using GTANetworkAPI;
 
 namespace Furious_V.Chat
 {
-    class System : Script
+    public class System : Script
     {
         [ServerEvent(Event.ResourceStart)]
         public void OnResourceStart()

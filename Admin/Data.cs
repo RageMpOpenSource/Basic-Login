@@ -6,7 +6,7 @@ namespace Furious_V.Admin
     /// <summary>
     /// Contains all relevant attributes and methods for admins.
     /// </summary>
-    class Data
+    public class Data
     {
         /// <summary>
         /// The different types of admin.

@@ -11,7 +11,7 @@ namespace Furious_V.MySQL
     /// <summary>
     /// The connection and primary tables are made from this class.
     /// </summary>
-    class Database : Script
+    public class Database : Script
     {
         /// <summary>
         /// The connection with which queries are to be executed is stored in this.
