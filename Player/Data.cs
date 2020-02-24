@@ -233,10 +233,12 @@ namespace Furious_V.Player
         /// Updates the player data in the database with respect to the <see cref="Data.Name"/>.
         /// </summary>
         /// <returns>void</returns>
-        public async Task SavePlayerData()
+        public async Task SavePlayerData(Client player)
         {
             String query;
-            query = $"UPDATE `players` SET Admin=@adminlevel, Cash=@cash, PrisonTime=@prisontime, Banned=@banned WHERE Name=@playername;";
+            query = $"UPDATE `players` SET Admin=@adminlevel, Cash=@cash, PrisonTime=@prisontime, Banned=@banned, " +
+                $"PosX=@posX, PosY=@posY, PosZ=@posZ, Heading=@heading " +
+                $"WHERE Name=@playername;";
             
             using (Database.DB_Connection = new MySqlConnection(Database.DB_ConnectionString))
             {
@@ -249,7 +251,10 @@ namespace Furious_V.Player
                     command.Parameters.AddWithValue("@prisontime", this.PrisonTime);
                     command.Parameters.AddWithValue("@banned", this.Banned);
                     command.Parameters.AddWithValue("@playername", this.Name);
-
+                    command.Parameters.AddWithValue("@posX", player.Position.X);
+                    command.Parameters.AddWithValue("@posY", player.Position.Y);
+                    command.Parameters.AddWithValue("@posZ", player.Position.Z);
+                    command.Parameters.AddWithValue("@heading", player.Heading);
                     await command.ExecuteNonQueryAsync();
                 }
                 await Database.DB_Connection.CloseAsync();
@@ -298,7 +303,7 @@ namespace Furious_V.Player
         {
             try
             {
-                await GetPlayerData(player).SavePlayerData();
+                await GetPlayerData(player).SavePlayerData(player);
                 Utils.Log($"Saved {player.Name}'s data.", Utils.Log_Status.Log_Debug);
             }
             catch (Exception)

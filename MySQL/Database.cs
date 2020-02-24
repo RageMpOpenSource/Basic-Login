@@ -80,6 +80,10 @@ namespace Furious_V.MySQL
                 command.CommandText =   $"CREATE TABLE IF NOT EXISTS `players` " +
                                         $"(SQLID INT(11) NOT NULL AUTO_INCREMENT," +
                                         $"Name VARCHAR(32) NOT NULL DEFAULT \"\"," +
+                                        $"PosX FLOAT NOT NULL DEFAULT 0.0," +
+                                        $"PosY FLOAT NOT NULL DEFAULT 0.0," +
+                                        $"PosZ FLOAT NOT NULL DEFAULT 0.0," +
+                                        $"Heading FLOAT NOT NULL DEFAULT 0.0," +
                                         $"Password VARCHAR(256) NOT NULL DEFAULT \"\"," +
                                         $"PrisonTime INT(11) NOT NULL DEFAULT 0," +
                                         $"Banned BOOLEAN NOT NULL DEFAULT FALSE," +
