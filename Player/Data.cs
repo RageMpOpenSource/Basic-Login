@@ -193,8 +193,27 @@ namespace Furious_V.Player
                             }
                             this.Cash = Convert.ToInt32(reader["Cash"]);
                             this.PrisonTime = Convert.ToInt32(reader["PrisonTime"]);
+                            if (this.PrisonTime > 0)
+                            {
+                                // To-Do: Prison the player //
+                            }
+                            else
+                            {
+                                NAPI.Player.GetPlayerFromName(this.Name).Position = new Vector3(Convert.ToDouble(reader["PosX"]), Convert.ToDouble(reader["PosY"]), Convert.ToDouble(reader["PosZ"]));
+                                NAPI.Player.GetPlayerFromName(this.Name).Rotation = new Vector3(0.0f, 0.0f, Convert.ToSingle(reader["Heading"]));
+                            }
                             this.Banned = Convert.ToBoolean(reader["Banned"]);
-                            this.LoggedIn = true;
+                            if (this.Banned)
+                            {
+                                Chat.System.SendErrorMessageToPlayer(NAPI.Player.GetPlayerFromName(this.Name), "You are banned from the server!");
+                                NAPI.Player.GetPlayerFromName(this.Name).Kick();
+                            }
+                            else
+                            {
+                                this.LoggedIn = true;
+                                Utils.Log($"{this.Name}'s data has loaded!", Utils.Log_Status.Log_Success);
+                                Utils.PopUpNotification(NAPI.Player.GetPlayerFromName(this.Name), "Logged in successfully", 3000, "lime", true);
+                            }
                         }
                     }
                 }
@@ -313,6 +332,11 @@ namespace Furious_V.Player
             return;
         }
 
+        /// <summary>
+        /// The password information that is sent from the client to the server to process it further.
+        /// </summary>
+        /// <param name="player">The local player from client-side that triggers this event.</param>
+        /// <param name="password">The passed password that the player sent.</param>
         [RemoteEvent("Login_LoginInfoToServer")]
         public async static void LoginInfoFromClient(Client player, string password)
         {
@@ -340,7 +364,6 @@ namespace Furious_V.Player
                 {
                     Utils.Log($"{player.Name} logged in with correct password.", Utils.Log_Status.Log_Success);
                     await GetPlayerData(player).LoadPlayerData();
-                    Utils.Log($"{player.Name}'s data has loaded!", Utils.Log_Status.Log_Success);
                 }
                 else
                 {
