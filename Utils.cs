@@ -66,12 +66,24 @@ namespace Furious_V
 
             return;
         }
-
+        /// <summary>
+        /// Calculates the distance between two players in an absolute form.
+        /// </summary>
+        /// <param name="player">The player</param>
+        /// <param name="target">The target</param>
+        /// <returns>The distance between the two players.</returns>
         public static float DistanceFromPlayerToPlayer(Client player, Client target)
         {
             return Math.Abs( player.Position.DistanceTo(target.Position) );
         }
-
+        /// <summary>
+        /// Displays a pop up notification from up top.
+        /// </summary>
+        /// <param name="player">The player who will see the notification.</param>
+        /// <param name="text">The message that will be displayed to the player.</param>
+        /// <param name="delay">The time in ms the pop up will be shown for.</param>
+        /// <param name="color">Color name in string.</param>
+        /// <param name="italics">Whether the text should be in italics or not.</param>
         public static void PopUpNotification(Client player, string text, int delay, string color, bool italics = false)
         {
             NAPI.ClientEvent.TriggerClientEvent(player, "Notification_PopUpNotification", text, delay, color, italics);
